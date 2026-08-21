@@ -121,7 +121,7 @@ async def send_test_closing():
     test_amount = format_amount(1342.45)
     message = random.choice(SCHEDULED_MESSAGES["closing"]).format(valor=test_amount)
     send_via_my_bot(me.id, message)
-    print(f"🧪 Teste temporário das 23:20 enviado: {message}")
+    print(f"🧪 Teste temporário das 23:47 enviado: {message}")
 
 
 @client.on(events.NewMessage(chats=SOURCE_BOT))
@@ -142,8 +142,8 @@ async def main():
     scheduler.add_job(lambda: send_scheduled_message("morning"), "cron", hour=8, minute=0)
     scheduler.add_job(lambda: send_scheduled_message("noon"), "cron", hour=12, minute=0)
     scheduler.add_job(lambda: send_scheduled_message("evening"), "cron", hour=18, minute=0)
-    # TESTE TEMPORÁRIO ÀS 23:35: remover depois de validar a mensagem das 23:59.
-    scheduler.add_job(send_test_closing, "cron", hour=23, minute=35)
+    # TESTE TEMPORÁRIO ÀS 23:47: remover depois de validar a mensagem das 23:59.
+    scheduler.add_job(send_test_closing, "cron", hour=23, minute=47)
     scheduler.add_job(send_daily_report, "cron", hour=23, minute=59)
     scheduler.start()
 
