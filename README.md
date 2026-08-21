@@ -4,7 +4,7 @@ Bot privado para monitorizar mensagens de vendas e novos fãs num canal/bot de o
 
 ## Configuração
 
-Defina as variáveis `API_ID`, `API_HASH`, `MY_BOT_TOKEN`, `SOURCE_BOT` e `SESSION_NAME`. Consulte `.env.example` como modelo. O ficheiro de sessão `*.session` é deliberadamente ignorado pelo Git e não deve ser publicado.
+Defina as variáveis `API_ID`, `API_HASH`, `MY_BOT_TOKEN`, `SOURCE_BOT` e `SESSION_STRING`. Consulte `.env.example` como modelo. A `SESSION_STRING` é uma representação segura da sessão Telethon e deve ser configurada como variável privada.
 
 ## Execução local
 
@@ -15,11 +15,11 @@ pip install -r requirements.txt
 python bot.py
 ```
 
-A primeira execução pode exigir autenticação da sessão Telethon. Depois, o processo permanece ligado, monitoriza o `SOURCE_BOT` e envia o relatório diário às 23:59.
+O processo inicia sem interação através da `SESSION_STRING`, permanece ligado, monitoriza o `SOURCE_BOT` e envia o relatório diário às 23:59.
 
 ## Railway
 
-No Railway, configure as mesmas variáveis como variáveis privadas do serviço. Para executar o bot, use o comando `python bot.py`. Como o ficheiro de sessão contém autenticação, não o coloque no GitHub; utilize um volume persistente ou injete a sessão de forma segura no ambiente de execução.
+No Railway, configure `API_ID`, `API_HASH`, `MY_BOT_TOKEN`, `SOURCE_BOT` e `SESSION_STRING` como variáveis privadas do serviço. Para executar o bot, use o comando `python bot.py`. Não é necessário carregar o ficheiro `.session` no Railway, porque a sessão é fornecida pela `SESSION_STRING`.
 
 ## Segurança
 

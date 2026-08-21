@@ -5,5 +5,8 @@ __pycache__/
 !.env.example
 *.session
 *.session-journal
+SESSION_STRING.txt
+convert_session.py
+inspect_session.py
 .venv/
 venv/

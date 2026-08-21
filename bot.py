@@ -5,13 +5,14 @@ import re
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telethon import TelegramClient, events
+from telethon.sessions import StringSession
 
 
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 MY_BOT_TOKEN = os.environ["MY_BOT_TOKEN"]
 SOURCE_BOT = os.getenv("SOURCE_BOT", "@tpdofm_bot")
-SESSION_NAME = os.getenv("SESSION_NAME", "sessao_bot")
+SESSION_STRING = os.environ["SESSION_STRING"]
 
 BOT_NAMES = {
     "@kaayyla_bot": "Kay 🌸",
@@ -24,7 +25,7 @@ STARS_TO_USD = {
 }
 
 daily_profit = 0.0
-client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
+client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 
 def convert_message(text: str):
