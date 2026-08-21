@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 import re
 from zoneinfo import ZoneInfo
 
@@ -19,6 +20,46 @@ BOT_NAMES = {
     "@kaayyla_bot": "Kay 🌸",
 }
 
+SCHEDULED_MESSAGES = {
+    "morning": [
+        "Bom dia! Já fez {valor}. Nada mal pra começar. 💰",
+        "08h e você já colocou {valor} no placar. 🔥",
+        "{valor} antes mesmo do café terminar. Começamos bem. ☕",
+        "Seu dia começou com {valor}. Agora é descobrir onde isso vai parar. 👀",
+        "{valor} já são seus. E o dia mal começou. 😎",
+        "O relógio marcou 08h. Seu faturamento marcou {valor}. Gostei mais do segundo.",
+        "Você acordou e já encontrou {valor} no painel. Bom dia mesmo. 😂",
+        "{valor} logo cedo? Seu eu de ontem ficaria orgulhoso. 🫡",
+        "08h: {valor} faturados. Se continuar assim, hoje promete. 🚀",
+        "Primeira missão do dia: olhar para esses {valor} e fazer esse número crescer.",
+    ],
+    "noon": [
+        "Pode almoçar tranquilo: já são {valor} no bolso hoje. 🍽️💰",
+        "Meio-dia e {valor} faturados. O almoço foi pago. 😎",
+        "Seu almoço tem gosto de {valor}. Aproveita. 😂",
+        "Até meio-dia: {valor}. Agora imagina onde esse número pode chegar. 👀",
+        "{valor} até agora. Se o resto do dia acompanhar, vai ficar bonito. 💸",
+    ],
+    "evening": [
+        "18h e você já fez {valor} hoje. Respeita esse número. 🫡",
+        "{valor} faturados. O expediente acabou, mas esse número ficou bonito.",
+        "Olha esses {valor}. Foi isso que seu trabalho colocou no placar hoje. 💰",
+        "18h: {valor}. Nada mal para mais um dia de vendas. 🔥",
+        "{valor} hoje. Seu eu de amanhã vai querer repetir esse número.",
+        "O relógio marcou 18h. O painel marcou {valor}. Eu sei qual número importa mais. 😂",
+        "{valor} faturados até agora. Pode fechar o notebook com orgulho. 🫡",
+        "18h. {valor} no placar. Se esse número pudesse falar, provavelmente pediria mais. 😂",
+    ],
+    "closing": [
+        "23:59. Hoje você fez {valor}. Pode dormir tranquilo. 😴💰",
+        "Dia encerrado: {valor} faturados. Amanhã tem mais. 🚀",
+        "{valor}. Esse é o número que resume seu dia de hoje. 🫡",
+        "Hoje começou em $0 e terminou em {valor}. É disso que estamos falando. 🔥",
+        "{valor} faturados hoje. Agora sim você pode desligar tudo.",
+        "Mais um dia transformado em {valor}. Nada mal. Nada mal mesmo. 😎",
+    ],
+}
+
 STARS_TO_USD = {
     80: 1, 99: 1, 100: 1, 125: 2, 150: 2, 200: 3, 249: 3, 250: 3,
     280: 4, 400: 5, 490: 6, 499: 6, 500: 7, 699: 9, 750: 10,
@@ -27,6 +68,10 @@ STARS_TO_USD = {
 
 daily_profit = 0.0
 client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
+
+
+def format_amount(value: float) -> str:
+    return f"${value:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 def convert_message(text: str):
@@ -57,12 +102,17 @@ def send_via_my_bot(chat_id: int, text: str):
     response.raise_for_status()
 
 
+async def send_scheduled_message(message_group: str):
+    me = await client.get_me()
+    amount = format_amount(daily_profit)
+    message = random.choice(SCHEDULED_MESSAGES[message_group]).format(valor=amount)
+    send_via_my_bot(me.id, message)
+    print(f"🕒 Mensagem programada ({message_group}): {message}")
+
+
 async def send_daily_report():
     global daily_profit
-    me = await client.get_me()
-    report = f"💸 Gross profit today: $ {daily_profit}"
-    send_via_my_bot(me.id, report)
-    print(f"📊 Relatório diário enviado: {report}")
+    await send_scheduled_message("closing")
     daily_profit = 0.0
 
 
@@ -81,6 +131,9 @@ async def main():
     print("🚀 SISTEMA ATIVO - Monitorando vendas, fãs e lucro diário!")
 
     scheduler = AsyncIOScheduler(timezone=ZoneInfo("America/Sao_Paulo"))
+    scheduler.add_job(lambda: send_scheduled_message("morning"), "cron", hour=8, minute=0)
+    scheduler.add_job(lambda: send_scheduled_message("noon"), "cron", hour=12, minute=0)
+    scheduler.add_job(lambda: send_scheduled_message("evening"), "cron", hour=18, minute=0)
     scheduler.add_job(send_daily_report, "cron", hour=23, minute=59)
     scheduler.start()
 
