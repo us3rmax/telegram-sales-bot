@@ -142,8 +142,8 @@ async def main():
     scheduler.add_job(lambda: send_scheduled_message("morning"), "cron", hour=8, minute=0)
     scheduler.add_job(lambda: send_scheduled_message("noon"), "cron", hour=12, minute=0)
     scheduler.add_job(lambda: send_scheduled_message("evening"), "cron", hour=18, minute=0)
-    # TESTE TEMPORÁRIO ÀS 23:32: remover depois de validar a mensagem das 23:59.
-    scheduler.add_job(send_test_closing, "cron", hour=23, minute=32)
+    # TESTE TEMPORÁRIO ÀS 23:35: remover depois de validar a mensagem das 23:59.
+    scheduler.add_job(send_test_closing, "cron", hour=23, minute=35)
     scheduler.add_job(send_daily_report, "cron", hour=23, minute=59)
     scheduler.start()
 
