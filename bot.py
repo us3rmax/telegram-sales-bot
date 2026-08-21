@@ -1,6 +1,7 @@
 import asyncio
 import os
 import re
+from zoneinfo import ZoneInfo
 
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -79,7 +80,7 @@ async def main():
     await client.start()
     print("🚀 SISTEMA ATIVO - Monitorando vendas, fãs e lucro diário!")
 
-    scheduler = AsyncIOScheduler()
+    scheduler = AsyncIOScheduler(timezone=ZoneInfo("America/Sao_Paulo"))
     scheduler.add_job(send_daily_report, "cron", hour=23, minute=59)
     scheduler.start()
 
